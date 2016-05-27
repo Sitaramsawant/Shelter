@@ -14,11 +14,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from views import index,SurveyListView,SurveyCreateView, SurveyDeleteView,search
+from views import (index,SurveyListView,SurveyCreateView, SurveyDeleteView,search,
+                 SurveyReportListView)
 
 admin.autodiscover()
 
-urlpatterns = [	
+urlpatterns = [    
     url(r'^$',index,name='index'),
     url(r'^master/', include(admin.site.urls)),
     url(r'^surveymapping/', SurveyListView.as_view(), name="SurveyCreate"),
@@ -26,6 +27,10 @@ urlpatterns = [
     url(r'^deletesurvey/(?P<survey>[0-9]+)/$', SurveyDeleteView, name='surveydelete'),
     url(r'Survey/(?P<survey>[0-9]+)/$', SurveyCreateView.as_view(), name='survey-update'), 
     url(r'^search/(?P<survey>[0-9]+)/$',search, name='search'),
-
+    
+   # surveyreports
+    url(r'^surveyreports/', SurveyReportListView.as_view(), name="SurveyReportCreate"),
+    url(r'^surveyreport/(?P<name>\w[a-zA-Z_0-9]+)/$',SurveyReportListView.as_view(), name='SurveyReportShow'),
+   
 ]
 

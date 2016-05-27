@@ -9,7 +9,7 @@ from django.views.generic import ListView
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormView,CreateView, UpdateView, DeleteView
 from models import City,Survey,CityReference
-from forms import SurveyCreateForm
+from forms import SurveyCreateForm,SurveyReportForm,getKoboSurveyIdList
 import json
 
 
@@ -92,3 +92,38 @@ def search(request):
 	c = CityReference.objects.get(id=id)
 	data_dict = {'city_code': str(c.city_code),'district_name':str(c.district_name),'district_code':str(c.district_code),'state_name':str(c.state_name),'state_code':str(c.state_code)}
 	return HttpResponse(json.dumps(data_dict), content_type = "application/json")
+
+
+
+#Survey Reports Views
+class SurveyReportListView(FormView):
+	template_name = 'SurveyReportListView.html'
+	form_class=SurveyReportForm
+
+	def dispatch(self, request, *args, **kwargs):
+		try:
+			if kwargs['name'] :
+				self.kobotool_survey_id=kwargs['name']
+		except :
+			print "Error"
+		return super(SurveyReportListView, self).dispatch(request, *args, **kwargs)
+
+	#code execute when save button click
+	def get_context_data(self, **kwargs):
+		context_data = super(SurveyReportListView, self).get_context_data(**kwargs)
+		try:
+			if self.kobotool_survey_id:
+				context_data['kobodata'] = {}
+				context_data['kobodata']=getKoboSurveyIdList(self.kobotool_survey_id)
+				context_data['form']=self.form_class(initial={'kobotool_survey_id':self.kobotool_survey_id})
+		except:
+			print "Error context"
+		return context_data
+
+	def get_queryset(self):
+		try:
+			self.kobotool_survey_id = self.kwargs['name']
+		except KeyError:
+			print "Eror in query"
+		return null
+ 
