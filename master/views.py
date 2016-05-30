@@ -92,3 +92,9 @@ def search(request):
 	c = CityReference.objects.get(id=id)
 	data_dict = {'city_code': str(c.city_code),'district_name':str(c.district_name),'district_code':str(c.district_code),'state_name':str(c.state_name),'state_code':str(c.state_code)}
 	return HttpResponse(json.dumps(data_dict), content_type = "application/json")
+
+
+class CSVFileListView(ListView):
+	template_name = 'CsvFileListView.html'
+	model = Survey
+
