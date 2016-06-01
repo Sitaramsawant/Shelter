@@ -8,10 +8,10 @@ from django.shortcuts import render,render_to_response,get_object_or_404
 from django.views.generic import ListView
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormView,CreateView, UpdateView, DeleteView
-from models import City,Survey,CityReference
+from models import City,Survey,CityReference,AdministrativeWard,Slum
 from forms import SurveyCreateForm
 import json
-
+import csv
 
 @staff_member_required
 def index(request):
@@ -94,7 +94,47 @@ def search(request):
 	return HttpResponse(json.dumps(data_dict), content_type = "application/json")
 
 
-class CSVFileListView(ListView):
-	template_name = 'CsvFileListView.html'
-	model = Survey
+def csvfileView(request):
+    template_name= 'CsvFileListView.html'
+    countries = getcascadingdata(request)
 
+    if request.GET.get('optone') != "" and request.GET.get('opttwo') != "" and request.GET.get('optthree') != "" :
+    	formdata={}
+		formdata['city']=request.GET.get('optone')
+		formdata['administrative']=request.GET.get('opttwo')
+		formdata['slum']=request.GET.get('optthree')
+		return generateCSV(request,formdata)
+	return render(request, template_name, {'countries': countries})
+
+def getcascadingdata(request):
+	cityAdminlist={}
+	cityAdminSlum={}
+
+	citys=City.objects.all()
+
+	for city in citys:
+		cityAdminlist[city]=AdministrativeWard.objects.filter(city_id=city)
+
+	for key,admin in cityAdminlist.items():
+		cityslumlist={}
+		for keyadmin in admin:
+			slum={}
+			slumval=[]
+			slum=Slum.objects.filter(electoral_ward__administrative_ward= keyadmin)
+
+			for keyslum in slum:
+				slumval.append(str(keyslum))
+			cityslumlist[str(keyadmin)]=slumval
+		cityAdminSlum[str(key)]=cityslumlist
+	return cityAdminSlum
+
+def generateCSV(request,formdata):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['name_key', 'name'])
+    for key,value in formdata.items():
+    	writer.writerow([key, str(value)])
+
+    return response
