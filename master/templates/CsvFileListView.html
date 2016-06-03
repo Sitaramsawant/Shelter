@@ -4,59 +4,80 @@
 {% block breadcrumbs %}{% csrf_token %}
 
 <form name="myform" id="myForm">
-    <select name="optone" id="stateSel" size="1">
-        <option value="" selected="selected">Please Select City</option>
-    </select>
-    <br>
-    <br>
-    <select name="opttwo" id="adminSel" size="1">
-        <option value="" selected="selected">Please Select Administrative Ward </option>
-    </select>
-    <br>
-    <br>
-    <select name="optthree" id="slumSel" size="1">
-        <option value="" selected="selected">Please select Slum</option>
-    </select>
+    <div width = 30% style = "margin-left:5%; margin-right:5%;" >
+    	<br><br><br>
+    	<h1>CSV File</h1>
+    	<br><br>
+    </div>
+    <table width = 30% style = "margin-left:5%; margin-right:5%;" >
+    	<tr>
+    		<td>City</td>
+    		<td>
+    			<select name="optone" id="stateSel" size="1">
+			        <option value="" selected="selected">Please Select City</option>
+			    </select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>Administrative Ward </td>
+    		<td>
+    			<select name="opttwo" id="adminSel" size="1">
+			        <option value="" selected="selected">Please Select Administrative Ward </option>
+			    </select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<td>Slum</td>
+    		<td>
+    			<select name="optthree" id="slumSel" size="1">
+			        <option value="" selected="selected">Please select Slum</option>
+			    </select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<td colspan="2" align="center">
+    			<input  style="width:195px;-ms-box-sizing:content-box;-moz-box-sizing:content-box;-webkit-box-sizing:content-box; box-sizing:content-box;" 
+					type="submit" name="Save" value="Generate csv file"  />
+    		</td>
+    		
+    	</tr>
+    </table>
     
-    <input  style="width:195px;-ms-box-sizing:content-box;-moz-box-sizing:content-box;-webkit-box-sizing:content-box; box-sizing:content-box;" 
-		type="submit" name="Save" value="Generate csv file"  />
 </form>
-
-
         
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script type="text/javascript" src="http://yourjavascript.com/7174319415/script.js"></script>
-    <script >
-		var stateObject={{countries|safe}}
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="http://yourjavascript.com/7174319415/script.js"></script>
+<script >
+	var stateObject={{countries|safe}}
 
-		window.onload = function () {
-		    var stateSel = document.getElementById("stateSel"),
-		        adminSel = document.getElementById("adminSel"),
-		        slumSel = document.getElementById("slumSel");
-		    console.log(stateObject)
-		    for (var state in stateObject) {
-		        stateSel.options[stateSel.options.length] = new Option(state, state);
-		    }
-		    stateSel.onchange = function () {
-		        adminSel.length = 1; // remove all options bar first
-		        slumSel.length = 1; // remove all options bar first
-		        if (this.selectedIndex < 1) return; // done   
-		        for (var county in stateObject[this.value]) {
-		            adminSel.options[adminSel.options.length] = new Option(county, county);
-		        }
-		    }
-		     stateSel.onchange(); // reset in case page is reloaded
-		    adminSel.onchange = function () {
-		        slumSel.length = 1; // remove all options bar first
-		        if (this.selectedIndex < 1) return; // done   
-		        var cities = stateObject[stateSel.value][this.value];
-		        for (var i = 0; i < cities.length; i++) {
-		            slumSel.options[slumSel.options.length] = new Option(cities[i], cities[i]);
-		        }
-		    }
-		}
-    
-    </script>
+	window.onload = function () {
+	    var stateSel = document.getElementById("stateSel"),
+	        adminSel = document.getElementById("adminSel"),
+	        slumSel = document.getElementById("slumSel");
+	    console.log(stateObject)
+	    for (var state in stateObject) {
+	        stateSel.options[stateSel.options.length] = new Option(state, state);
+	    }
+	    stateSel.onchange = function () {
+	        adminSel.length = 1; // remove all options bar first
+	        slumSel.length = 1; // remove all options bar first
+	        if (this.selectedIndex < 1) return; // done   
+	        for (var county in stateObject[this.value]) {
+	            adminSel.options[adminSel.options.length] = new Option(county, county);
+	        }
+	    }
+	     stateSel.onchange(); // reset in case page is reloaded
+	    adminSel.onchange = function () {
+	        slumSel.length = 1; // remove all options bar first
+	        if (this.selectedIndex < 1) return; // done   
+	        var cities = stateObject[stateSel.value][this.value];
+	        for (var i = 0; i < cities.length; i++) {
+	            slumSel.options[slumSel.options.length] = new Option(cities[i], cities[i]);
+	        }
+	    }
+	}
+
+</script>
     
 {% endblock %}
 {% block content %}

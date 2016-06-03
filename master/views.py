@@ -97,14 +97,15 @@ def search(request):
 def csvfileView(request):
     template_name= 'CsvFileListView.html'
     countries = getcascadingdata(request)
-
-    if request.GET.get('optone') != "" and request.GET.get('opttwo') != "" and request.GET.get('optthree') != "" :
-    	formdata={}
-		formdata['city']=request.GET.get('optone')
-		formdata['administrative']=request.GET.get('opttwo')
-		formdata['slum']=request.GET.get('optthree')
-		return generateCSV(request,formdata)
-	return render(request, template_name, {'countries': countries})
+    
+    if request.GET.get('Save')=='Generate csv file':
+    	if request.GET.get('optone') != "" and request.GET.get('opttwo') != "" and request.GET.get('optthree') != "" :
+	    	formdata={}
+	    	formdata['city']=request.GET.get('optone')
+	    	formdata['administrative']=request.GET.get('opttwo')
+	    	formdata['slum']=request.GET.get('optthree')
+	    	return generateCSV(request,formdata)
+    return render(request, template_name, {'countries': countries})
 
 def getcascadingdata(request):
 	cityAdminlist={}
@@ -130,7 +131,7 @@ def getcascadingdata(request):
 
 def generateCSV(request,formdata):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+    response['Content-Disposition'] = 'attachment; filename="defaultValues.csv"'
 
     writer = csv.writer(response)
     writer.writerow(['name_key', 'name'])
