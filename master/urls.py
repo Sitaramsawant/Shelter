@@ -15,7 +15,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from views import (index,SurveyListView,SurveyCreateView, SurveyDeleteView,search,
-                 SurveyReportListView)
+                 SurveyReportListView,excelsheet)
 
 admin.autodiscover()
 
@@ -31,6 +31,7 @@ urlpatterns = [
    # surveyreports
     url(r'^surveyreports/', SurveyReportListView.as_view(), name="SurveyReportCreate"),
     url(r'^surveyreport/(?P<name>\w[a-zA-Z_0-9]+)/$',SurveyReportListView.as_view(), name='SurveyReportShow'),
+    url(r'^surveyreport/excelsheet/(?P<name>\w[a-zA-Z_0-9]+)/$',excelsheet, name='excelsheet'),
    
 ]
 

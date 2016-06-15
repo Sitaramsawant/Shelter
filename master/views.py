@@ -11,6 +11,7 @@ from django.views.generic.edit import FormView,CreateView, UpdateView, DeleteVie
 from models import City,Survey,CityReference
 from forms import SurveyCreateForm,SurveyReportForm,getKoboSurveyIdList
 import json
+from excel import export_excel
 
 
 @staff_member_required
@@ -126,4 +127,12 @@ class SurveyReportListView(FormView):
 		except KeyError:
 			print "Eror in query"
 		return null
+
+@csrf_exempt
+def excelsheet(request,name):	
+	print name
+	print "hello i m here ... :)"
+	data=export_excel(request)
+	return data
+
  

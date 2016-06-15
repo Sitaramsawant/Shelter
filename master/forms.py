@@ -84,7 +84,7 @@ class SurveyReportForm(forms.ModelForm):
         model=Survey
         fields = ['city','survey_type','kobotool_survey_id']
 
-def getKoboSurveyIdList(koboformid):
+def getKoboSurveyIdList1(koboformid):
     url=local_settings.KOBOCAT_DATA_FORM_ID + getkoboFormID(koboformid)
     req = urllib2.Request(url)
     req.add_header('Authorization', local_settings.KOBOCAT_TOKEN)
@@ -92,6 +92,8 @@ def getKoboSurveyIdList(koboformid):
     content = resp.read()
     kobocatdata = json.loads(content)
 
+    print kobocatdata
+    print "################################"
     #Code for Dkobo Form Data
     url1=local_settings.DKOBO_FORM_ID + getkoboFormID(koboformid)+"/form"
     dkreq = urllib2.Request(url1)
@@ -100,6 +102,7 @@ def getKoboSurveyIdList(koboformid):
     dkcontent = dkresp.read()
     dkdata = json.loads(dkcontent)
 
+    print dkdata
     dkobodict={}
     for value in dkdata['children']:
         try:
@@ -135,8 +138,86 @@ def getKoboSurveyIdList(koboformid):
         if kobo_arr:
             final_kobo_arr[counter]=kobo_arr
         counter+=1
-
+    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+    print final_kobo_arr
     return final_kobo_arr
+
+def getKoboSurveyIdList(koboformid):
+    url=local_settings.KOBOCAT_DATA_FORM_ID + getkoboFormID(koboformid)
+    req = urllib2.Request(url)
+    req.add_header('Authorization', local_settings.KOBOCAT_TOKEN)
+    resp = urllib2.urlopen(req)
+    content = resp.read()
+    kobocatdata = json.loads(content)
+
+    #Code for Dkobo Form Data
+    url1=local_settings.DKOBO_FORM_ID + getkoboFormID(koboformid)+"/form"
+    dkreq = urllib2.Request(url1)
+    dkreq.add_header('Authorization', local_settings.KOBOCAT_TOKEN)
+    dkresp = urllib2.urlopen(dkreq)
+    dkcontent = dkresp.read()
+    dkdata = json.loads(dkcontent)
+    dkobodict={}
+
+    for value in dkdata['children']:
+        try:
+            if value['type']=='group':                              
+                for grpval in value['children']:                                        
+                    if grpval['bind']:
+                        if grpval['type']=="select one" or grpval['type']=="select all that apply":
+                            dkobodict[value['name']+"/"+grpval['name']]=(grpval['label'],grpval['type'],value['label'],grpval['children'])
+                        else:
+                            dkobodict[value['name']+"/"+grpval['name']]=(grpval['label'],grpval['type'],value['label'])
+                                                      
+            elif value['bind']:
+                if value['type']=="select one" or value['type']=="select all that apply":
+                    dkobodict[value['name']]=(value['label'],value['type'],None,value['children'])
+                else:
+                    dkobodict[value['name']]=(value['label'],value['type'],None)
+        except:
+            print "Error in KOboSurveyID List"    
+    print "####################333"
+    print dkobodict
+    #code for KObocat Data values
+    kobo_arr={}
+    kobo_demo={}
+    final_kobo_arr={}
+    final_kobo_demo={}
+    counter=0
+    for value in kobocatdata:
+        kobo_arr={}
+        kobo_demo={}
+        for key,kobovalue in value.items():
+            print (key,kobovalue)
+            for dkey,dkvalue in dkobodict.items():
+                if dkey==key:
+                    if dkvalue[1]=='select all that apply' or dkvalue[1]=='select one':
+                        finaldkselval=""
+                        for dkselchild in range(len(dkvalue[3])):
+                            dkselsplit=kobovalue.split(" ")
+                            for da in range(len(dkselsplit)):
+                                if dkselsplit[da]==dkvalue[3][dkselchild]['name']:
+                                    finaldkselval += dkvalue[3][dkselchild]['label']+" "
+
+                            kobo_arr[dkvalue[0]]=finaldkselval
+                            kobo_demo[dkvalue[0]]=(dkvalue[2],finaldkselval)
+                    else:
+                        kobo_arr[dkvalue[0]]=kobovalue
+                        kobo_demo[dkvalue[0]]=(dkvalue[2],kobovalue)
+                    print "%%%%%%%%%%%%%%%%"
+                    print kobo_arr
+                    print "******"
+                    print kobo_demo
+                    print "%%%%%%%%%%%%%%%%5"
+        if kobo_arr:
+            final_kobo_arr[counter]=kobo_arr
+            final_kobo_demo[counter]=kobo_demo
+        counter+=1
+    print "#######################"
+    print final_kobo_arr
+    print "#######################"
+    print final_kobo_demo
+    return final_kobo_demo
 
 def getkoboFormID(koboformid):
     conn = psycopg2.connect(database=settings.KOBOCAT_DATABASES['DBNAME'],
@@ -155,3 +236,5 @@ def getkoboFormID(koboformid):
             koboid=jsonValue
 
     return  str(koboid)
+
+
