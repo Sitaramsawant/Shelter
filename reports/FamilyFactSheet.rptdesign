@@ -1555,12 +1555,14 @@ from logger_instance where json->>'group_vq77l17/slum_name'= ? and json->>'group
                                     <property name="borderTopColor">#D1E2F4</property>
                                     <property name="borderTopStyle">solid</property>
                                     <property name="borderTopWidth">6px</property>
+                                    <property name="textAlign">center</property>
+                                    
                                     <image id="3318">
                                         <property name="marginTop">0.07cm</property>
-                                        <property name="marginLeft">1.5in</property>
+                                        
                                         <property name="marginBottom">0.07cm</property>
                                         <property name="height">3.1in</property>
-                                        <property name="width">1.8in</property>
+                                        <structure name="toc"/>
                                         <property name="source">url</property>
                                         <expression name="uri" type="javascript">if(row["family_photo"] == null ||row["family_photo"] == ''){
 "http://app.shelter-associates.org/static/images/no-image.png"
@@ -1571,10 +1573,9 @@ else{
                                     </image>
                                     <image id="3317">
                                         <property name="marginTop">0.07pt</property>
-                                        <property name="marginLeft">1.5in</property>
+                                        
                                         <property name="marginBottom">1pt</property>
                                         <property name="height">3.1in</property>
-                                        <property name="width">1.8in</property>
                                         <property name="source">url</property>
                                         <expression name="uri" type="javascript">if(row["toilet_photo"] == null ||row["toilet_photo"] == ''){
 "http://app.shelter-associates.org/static/images/no-image.png"
